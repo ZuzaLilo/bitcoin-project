@@ -44,9 +44,14 @@ main = do
             print "EUR records saved to db!"
             print "All Data successfully saved to the Database."
 
-            let toQuery = "EUR"
-            result <- queryItemByID toQuery conn
-            print(result)
+            resultEUR <- queryItemByCode "EUR" conn
+            putStrLn $ "Latest EURO data: " ++ show(resultEUR)
+
+            resultUSD <- queryItemByCode "USD" conn
+            putStrLn $ "Latest USD data: " ++ show(resultUSD)
+
+            resultGBP <- queryItemByCode "GBP" conn
+            putStrLn $ "Latest GBP data: " ++ show(resultGBP)
 
             -- write https://api.coindesk.com/v1/bpi/currentprice.json to a file
             createJsonFile

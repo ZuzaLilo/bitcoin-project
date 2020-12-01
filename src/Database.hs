@@ -12,10 +12,11 @@ module Database
     saveUsdRecords,
     prepareInsertEurStmt,
     saveEurRecords,
-    queryItemByID
+    queryItemByCode
     ) where
 
 import Database.HDBC
+import Data.Char
 import Database.HDBC.Sqlite3
 import Parse
     ( Currency(code, symbol, rate, description, rate_float),
@@ -175,14 +176,14 @@ saveEurRecords currency conn = do
 --    let fs = map getFloat ps
 --    return $ (sum fs) / (read.show.length $ fs)
 
-queryItemByID ::  IConnection conn => String -> conn -> IO [[SqlValue]]
-queryItemByID itemID conn = do
+queryItemByCode ::  IConnection conn => String -> conn -> IO [[SqlValue]]
+queryItemByCode itemCode conn = do
   stmt <- prepare conn query
-  execute stmt [toSql itemID]
+  execute stmt [toSql itemCode]
   rows <- fetchAllRows stmt 
   return rows
   where
-    query = unlines $ [ "SELECT description FROM eur WHERE code = ?" ]
+    query = unlines $ [ "SELECT description, rate, rate_float FROM "++ map toLower itemCode++" WHERE code = ?" ]
 
 
 
