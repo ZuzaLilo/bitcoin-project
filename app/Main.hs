@@ -43,6 +43,11 @@ main = do
             saveEurRecords (eurCurrency) conn
             print "EUR records saved to db!"
             print "All Data successfully saved to the Database."
+
+            let toQuery = "EUR"
+            result <- queryItemByID toQuery conn
+            print(result)
+
             -- write https://api.coindesk.com/v1/bpi/currentprice.json to a file
             createJsonFile
             askQuestions

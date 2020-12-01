@@ -12,6 +12,7 @@ module Database
     saveUsdRecords,
     prepareInsertEurStmt,
     saveEurRecords,
+    queryItemByID
     ) where
 
 import Database.HDBC
@@ -29,12 +30,14 @@ initialiseDB =
           \usd_id INTEGER NOT NULL, \
           \gbp_id INTEGER NOT NULL, \
           \eur_id INTEGER NOT NULL, \
-          \updated VARCHAR(40) NOT NULL, \
+
           \FOREIGN KEY (usd_id) REFERENCES usd(usd_id), \
           \FOREIGN KEY (gbp_id) REFERENCES usd(gbp_id), \
-          \FOREIGN KEY (eur_id) REFERENCES usd(eur_id), \
-          \FOREIGN KEY (updated) REFERENCES time(updated) \
-          \) " []               
+          \FOREIGN KEY (eur_id) REFERENCES usd(eur_id) \
+          
+          \) " []       
+        --   \updated VARCHAR(40) NOT NULL, \        
+        --   \FOREIGN KEY (updated) REFERENCES time(updated) \
     commit conn
     run conn "CREATE TABLE IF NOT EXISTS usd (\
           \code VARCHAR(40) NOT NULL, \
@@ -150,6 +153,37 @@ saveEurRecords currency conn = do
      stmt <- prepareInsertEurStmt conn 
      execute stmt (currencyToSqlValues currency) 
      commit conn
+
+-- returnData :: Database -> String -> IO String
+-- averagePrice db cia_name = do
+--    cia_id <- getCiaID db cia_name
+--    -- getting list of prices
+--    stmt <- prepare db (pack "SELECT (close) FROM prices WHERE companyID=:cia")
+--    bindNamed stmt [ (pack ":cia", SQLInteger cia_id) ]
+--    let
+--        isFloat (SQLFloat _) = True
+--        isFloat _ = False
+--    let getFloat (SQLFloat f) = f
+--    let readPrice ps = do
+--          result <- step stmt       -- one statement step
+--          p <- column stmt 0        -- read price
+--          if isFloat p then
+--             readPrice (p:ps)
+--          else
+--             return ps
+--    ps <- readPrice []
+--    let fs = map getFloat ps
+--    return $ (sum fs) / (read.show.length $ fs)
+
+queryItemByID ::  IConnection conn => String -> conn -> IO [[SqlValue]]
+queryItemByID itemID conn = do
+  stmt <- prepare conn query
+  execute stmt [toSql itemID]
+  rows <- fetchAllRows stmt 
+  return rows
+  where
+    query = unlines $ [ "SELECT description FROM eur WHERE code = ?" ]
+
 
 
 
