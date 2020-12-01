@@ -158,13 +158,10 @@ saveEurRecords currency conn = do
 
 queryItemByCode ::  IConnection conn => String -> conn -> IO [String]
 queryItemByCode itemCode conn = do
-  stmt <- prepare conn query
+  stmt <- prepare conn "SELECT description, rate, rate_float FROM "++ map toLower itemCode ++" WHERE code = ?"
   execute stmt [toSql itemCode]
   rows <- fetchAllRows stmt 
   return $ map fromSql $ head rows
-  where
-    query = unlines $ [ "SELECT description, rate, rate_float FROM "++ map toLower itemCode ++" WHERE code = ?" ]
-
 
 
 
