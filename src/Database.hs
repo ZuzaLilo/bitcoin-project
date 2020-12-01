@@ -155,26 +155,6 @@ saveEurRecords currency conn = do
      execute stmt (currencyToSqlValues currency) 
      commit conn
 
--- returnData :: Database -> String -> IO String
--- averagePrice db cia_name = do
---    cia_id <- getCiaID db cia_name
---    -- getting list of prices
---    stmt <- prepare db (pack "SELECT (close) FROM prices WHERE companyID=:cia")
---    bindNamed stmt [ (pack ":cia", SQLInteger cia_id) ]
---    let
---        isFloat (SQLFloat _) = True
---        isFloat _ = False
---    let getFloat (SQLFloat f) = f
---    let readPrice ps = do
---          result <- step stmt       -- one statement step
---          p <- column stmt 0        -- read price
---          if isFloat p then
---             readPrice (p:ps)
---          else
---             return ps
---    ps <- readPrice []
---    let fs = map getFloat ps
---    return $ (sum fs) / (read.show.length $ fs)
 
 queryItemByCode ::  IConnection conn => String -> conn -> IO [[SqlValue]]
 queryItemByCode itemCode conn = do
