@@ -32,7 +32,8 @@ initialiseDB =
           \updated VARCHAR(40) NOT NULL, \
           \FOREIGN KEY (usd_id) REFERENCES usd(usd_id), \
           \FOREIGN KEY (gbp_id) REFERENCES usd(gbp_id), \
-          \FOREIGN KEY (eur_id) REFERENCES usd(eur_id) \
+          \FOREIGN KEY (eur_id) REFERENCES usd(eur_id), \
+          \FOREIGN KEY (updated) REFERENCES time(updated) \
           \) " []               
     commit conn
     run conn "CREATE TABLE IF NOT EXISTS usd (\
@@ -69,8 +70,7 @@ initialiseDB =
           \updated VARCHAR(40) NOT NULL, \
           \updated_ISO VARCHAR(40) NOT NULL, \
           \updateduk VARCHAR(40) NOT NULL, \
-          \id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \
-          \FOREIGN KEY (updated) REFERENCES currencys_last_updated(updated) \
+          \id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT \
           \) " []                            
     commit conn
  {-   run conn "CREATE TABLE IF NOT EXISTS currencys_updated (\
