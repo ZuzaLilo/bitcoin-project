@@ -11,4 +11,4 @@ download :: String -> IO L8.ByteString
 download url = do
     request <- parseRequest url 
     response <- httpLBS request
-    return $ getResponseBody response
+    return $ getResponseBody response 

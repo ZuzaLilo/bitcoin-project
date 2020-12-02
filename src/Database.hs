@@ -12,7 +12,8 @@ module Database
     saveUsdRecords,
     prepareInsertEurStmt,
     saveEurRecords,
-    queryItemByCode
+    queryItemByCode,
+    getCurrencyId
     ) where
 
 import Database.HDBC
@@ -47,7 +48,7 @@ initialiseDB =
           \description VARCHAR(40) NOT NULL, \
           \rate_float DOUBLE,  \
           \usd_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT \
-          \) " []       
+          \) " []        
         --   \usd_id INTEGER PRIMARY KEY, \
     commit conn
     run conn "CREATE TABLE IF NOT EXISTS gbp (\
@@ -158,10 +159,22 @@ saveEurRecords currency conn = do
 
 queryItemByCode ::  IConnection conn => String -> conn -> IO [String]
 queryItemByCode itemCode conn = do
-  stmt <- prepare conn "SELECT description, rate, rate_float FROM "++ map toLower itemCode ++" WHERE code = ?"
+  stmt <- prepare conn query
   execute stmt [toSql itemCode]
   rows <- fetchAllRows stmt 
   return $ map fromSql $ head rows
+  where
+    query = unlines $ ["SELECT description, rate, rate_float FROM "++ map toLower itemCode ++" WHERE code = ?"]
+
+getCurrencyId ::  IConnection conn => String -> conn -> IO [String]
+getCurrencyId currency conn = do
+  stmt <- prepare conn query
+  execute stmt []
+  rows <- fetchAllRows stmt 
+  return $ map fromSql $ head rows
+  where
+    query = unlines $ ["SELECT " ++ currency ++ "_id FROM "++ currency]
+
 
 
 

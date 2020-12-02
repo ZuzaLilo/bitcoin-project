@@ -44,6 +44,9 @@ main = do
             print "EUR records saved to db!"
             print "All Data successfully saved to the Database."
 
+            currencyId <- getCurrencyId "eur" conn
+            print(currencyId)
+
             -- This can later go inside the askQuestions function
             resultEUR <- queryItemByCode "EUR" conn
             putStrLn $ "Latest EURO data: " ++ show(resultEUR)
